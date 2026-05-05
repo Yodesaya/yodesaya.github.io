@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yodesaya Timprom — Solution Architect & Data Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ── RESET & BASE ── */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --black:#06060A;--dark:#0D0D14;--panel:#13131E;--card:#191928;--border:rgba(255,255,255,.07);
+  --cyan:#00F5C8;--cyan2:#00C9A7;--pink:#FF2D78;--blue:#3B8EFF;--amber:#FFB800;
+  --text:#E8E8F0;--muted:#7070A0;--dim:#3A3A5A;
+  --mono:'IBM Plex Mono',monospace;--display:'Syne',sans-serif;--code:'Space Mono',monospace;
+}
+html{scroll-behavior:smooth}
+body{background:var(--black);color:var(--text);font-family:var(--mono);overflow-x:hidden;cursor:none}
+
+/* ── CUSTOM CURSOR ── */
+.cursor{position:fixed;width:10px;height:10px;background:var(--cyan);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform .1s,background .2s;mix-blend-mode:difference}
+.cursor-ring{position:fixed;width:32px;height:32px;border:1px solid var(--cyan);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all .15s ease;mix-blend-mode:difference;opacity:.6}
+
+/* ── GRID NOISE BG ── */
+body::before{content:'';position:fixed;inset:0;background-image:repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(255,255,255,.015) 40px),repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(255,255,255,.015) 40px);pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 60% at 20% 20%,rgba(0,245,200,.04),transparent),radial-gradient(ellipse 60% 80% at 80% 80%,rgba(255,45,120,.04),transparent);pointer-events:none;z-index:0}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:18px 48px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:rgba(6,6,10,.85);backdrop-filter:blur(20px)}
+.nav-logo{font-family:var(--code);font-size:13px;color:var(--cyan);letter-spacing:2px;text-decoration:none}
+.nav-logo span{color:var(--muted)}
+.nav-links{display:flex;gap:32px}
+.nav-links a{font-family:var(--code);font-size:11px;color:var(--muted);text-decoration:none;letter-spacing:2px;text-transform:uppercase;transition:color .2s}
+.nav-links a:hover{color:var(--cyan)}
+.nav-status{display:flex;align-items:center;gap:8px;font-family:var(--code);font-size:11px;color:var(--cyan)}
+.status-dot{width:7px;height:7px;background:var(--cyan);border-radius:50%;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(0,245,200,.4)}50%{box-shadow:0 0 0 6px rgba(0,245,200,0)}}
+
+/* ── HERO ── */
+#hero{min-height:100vh;display:flex;align-items:center;padding:100px 48px 60px;position:relative;overflow:hidden}
+.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;width:100%;max-width:1200px;margin:0 auto;position:relative;z-index:1}
+.hero-left{}
+.hero-tag{font-family:var(--code);font-size:11px;color:var(--cyan);letter-spacing:3px;text-transform:uppercase;margin-bottom:24px;display:flex;align-items:center;gap:10px}
+.hero-tag::before{content:'';width:32px;height:1px;background:var(--cyan)}
+h1{font-family:var(--display);font-size:clamp(36px,4.5vw,64px);font-weight:800;line-height:1.05;letter-spacing:-1px;margin-bottom:20px}
+h1 .line-muted{color:var(--muted);font-weight:400;display:block;font-size:.65em}
+h1 .line-cyan{color:var(--cyan);display:block}
+h1 .line-white{color:var(--text);display:block}
+.hero-bio{font-size:13px;color:var(--muted);line-height:1.9;max-width:480px;margin-bottom:36px}
+.hero-bio strong{color:var(--text)}
+.hero-cta{display:flex;gap:14px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 24px;border-radius:4px;font-family:var(--code);font-size:12px;letter-spacing:1px;text-decoration:none;text-transform:uppercase;transition:all .2s;border:1px solid}
+.btn-cyan{background:var(--cyan);color:var(--black);border-color:var(--cyan);font-weight:700}
+.btn-cyan:hover{background:transparent;color:var(--cyan)}
+.btn-ghost{background:transparent;color:var(--text);border-color:var(--border)}
+.btn-ghost:hover{border-color:var(--cyan);color:var(--cyan)}
+/* hero right — photo + stat cards */
+.hero-right{position:relative;display:flex;flex-direction:column;align-items:center;gap:20px}
+.photo-frame{position:relative;width:260px;height:310px;flex-shrink:0}
+.photo-frame::before{content:'';position:absolute;inset:-8px;border:1px solid var(--cyan);border-radius:4px;opacity:.35;animation:frameGlow 3s ease-in-out infinite}
+@keyframes frameGlow{0%,100%{opacity:.35}50%{opacity:.7}}
+.photo-frame::after{content:'';position:absolute;top:-4px;left:-4px;right:-4px;bottom:-4px;border:1px dashed var(--cyan);border-radius:4px;opacity:.2}
+.photo-frame img{width:100%;height:100%;object-fit:cover;object-position:top;filter:grayscale(20%) contrast(1.05);border-radius:2px;display:block}
+.photo-badge{position:absolute;bottom:-16px;right:-16px;background:var(--cyan);color:var(--black);font-family:var(--code);font-size:10px;font-weight:700;padding:8px 14px;letter-spacing:1px;border-radius:2px}
+.stat-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;width:100%;max-width:320px}
+.stat-card{background:var(--panel);border:1px solid var(--border);border-radius:4px;padding:14px 12px;text-align:center}
+.stat-num{font-family:var(--display);font-size:22px;font-weight:800;color:var(--cyan);display:block}
+.stat-lbl{font-family:var(--code);font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;display:block;margin-top:4px}
+.hero-decor{position:absolute;top:10%;right:-60px;width:300px;height:300px;background:radial-gradient(circle,rgba(0,245,200,.06),transparent 70%);border-radius:50%;pointer-events:none}
+
+/* ── SECTION BASE ── */
+section{padding:100px 48px;position:relative;z-index:1}
+.section-label{font-family:var(--code);font-size:10px;color:var(--cyan);letter-spacing:3px;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.section-label::before{content:'//';color:var(--dim);margin-right:4px}
+.section-title{font-family:var(--display);font-size:clamp(28px,4vw,48px);font-weight:800;letter-spacing:-1px;margin-bottom:48px}
+.section-title em{font-style:normal;color:var(--cyan)}
+.max-w{max-width:1200px;margin:0 auto}
+
+/* ── SKILLS SECTION ── */
+#skills{background:var(--dark)}
+.skills-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1px;background:var(--border)}
+.skill-group{background:var(--dark);padding:28px;border:1px solid var(--border)}
+.skill-group-title{font-family:var(--display);font-size:13px;font-weight:700;color:var(--text);margin-bottom:16px;display:flex;align-items:center;gap:10px;letter-spacing:.5px}
+.skill-group-icon{color:var(--cyan);font-size:16px}
+.skill-tags{display:flex;flex-wrap:wrap;gap:6px}
+.skill-tag{background:var(--panel);border:1px solid var(--border);border-radius:2px;padding:4px 10px;font-family:var(--code);font-size:10px;color:var(--muted);letter-spacing:.5px;transition:all .2s}
+.skill-tag:hover{border-color:var(--cyan);color:var(--cyan)}
+.skill-tag.hot{border-color:rgba(0,245,200,.3);color:var(--cyan)}
+
+/* ── EXPERIENCE ── */
+#experience{background:var(--black)}
+.timeline{position:relative;padding-left:32px;border-left:1px solid var(--dim)}
+.exp-item{position:relative;margin-bottom:52px;animation:fadeUp .5s ease both}
+.exp-item::before{content:'';position:absolute;left:-37px;top:8px;width:10px;height:10px;border-radius:50%;background:var(--cyan);border:2px solid var(--black);box-shadow:0 0 0 4px rgba(0,245,200,.2)}
+.exp-item:last-child{margin-bottom:0}
+.exp-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;gap:20px;flex-wrap:wrap}
+.exp-title{font-family:var(--display);font-size:17px;font-weight:700;color:var(--text)}
+.exp-company{font-family:var(--code);font-size:12px;color:var(--cyan);margin-top:4px}
+.exp-client{font-family:var(--code);font-size:11px;color:var(--muted)}
+.exp-period{font-family:var(--code);font-size:10px;color:var(--muted);white-space:nowrap;background:var(--panel);padding:4px 10px;border-radius:2px;border:1px solid var(--border)}
+.exp-bullets{margin-top:12px;display:flex;flex-direction:column;gap:7px}
+.exp-bullet{font-size:12px;color:var(--muted);line-height:1.7;padding-left:16px;position:relative}
+.exp-bullet::before{content:'▸';position:absolute;left:0;color:var(--cyan);font-size:10px;top:1px}
+.exp-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:12px}
+.exp-tag{font-family:var(--code);font-size:9px;color:var(--muted);border:1px solid var(--dim);padding:2px 8px;border-radius:2px}
+
+/* ── ACHIEVEMENTS ── */
+#achievements{background:var(--dark)}
+.achieve-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:20px}
+.achieve-card{background:var(--panel);border:1px solid var(--border);border-radius:4px;padding:24px;position:relative;overflow:hidden;transition:border-color .2s,transform .2s}
+.achieve-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),transparent)}
+.achieve-card:hover{border-color:rgba(0,245,200,.3);transform:translateY(-3px)}
+.achieve-icon{font-size:24px;margin-bottom:14px;display:block}
+.achieve-title{font-family:var(--display);font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px}
+.achieve-desc{font-size:11px;color:var(--muted);line-height:1.8}
+.achieve-metric{margin-top:12px;font-family:var(--code);font-size:16px;font-weight:700;color:var(--cyan)}
+
+/* ── TOOLS / STACK ── */
+#stack{background:var(--black)}
+.stack-marquee-wrap{overflow:hidden;margin:0 -48px;padding:0 48px}
+.stack-row{display:flex;gap:14px;margin-bottom:14px;animation:marquee 28s linear infinite}
+.stack-row.rev{animation-direction:reverse}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.stack-chip{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--border);padding:8px 16px;border-radius:2px;white-space:nowrap;font-family:var(--code);font-size:11px;color:var(--muted);flex-shrink:0;transition:border-color .2s}
+.stack-chip:hover{border-color:var(--cyan);color:var(--cyan)}
+.stack-chip .dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);flex-shrink:0}
+.stack-chip .dot.pink{background:var(--pink)}
+.stack-chip .dot.blue{background:var(--blue)}
+.stack-chip .dot.amber{background:var(--amber)}
+
+/* ── ABOUT / EDUCATION ── */
+#about{background:var(--dark)}
+.about-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:60px;align-items:start}
+.about-photo-wrap{position:relative}
+.about-photo{width:100%;max-width:380px;border-radius:4px;filter:grayscale(10%);border:1px solid var(--border)}
+.about-photo-wrap::after{content:'YODESAYA.T';position:absolute;bottom:16px;left:16px;font-family:var(--code);font-size:9px;letter-spacing:3px;color:var(--cyan);background:rgba(6,6,10,.85);padding:5px 10px}
+.about-content{}
+.edu-item{background:var(--panel);border:1px solid var(--border);border-radius:4px;padding:18px;margin-bottom:12px;border-left:2px solid var(--cyan)}
+.edu-degree{font-family:var(--display);font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px}
+.edu-school{font-family:var(--code);font-size:11px;color:var(--cyan)}
+.edu-meta{font-family:var(--code);font-size:10px;color:var(--muted);margin-top:4px}
+.cert-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:20px}
+.cert-card{background:var(--card);border:1px solid var(--border);border-radius:3px;padding:10px 12px}
+.cert-name{font-size:10px;color:var(--text);font-family:var(--mono);margin-bottom:2px}
+.cert-issuer{font-size:9px;color:var(--cyan);font-family:var(--code)}
+
+/* ── CONTACT ── */
+#contact{background:var(--black)}
+.contact-inner{max-width:700px}
+.contact-title{font-family:var(--display);font-size:clamp(32px,5vw,56px);font-weight:800;letter-spacing:-1px;line-height:1.1;margin-bottom:32px}
+.contact-title em{font-style:normal;color:var(--cyan)}
+.contact-links{display:flex;flex-direction:column;gap:14px;margin-bottom:48px}
+.contact-link{display:flex;align-items:center;gap:16px;text-decoration:none;group:true;transition:all .2s}
+.cl-icon{width:42px;height:42px;border:1px solid var(--border);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;background:var(--panel);transition:all .2s}
+.contact-link:hover .cl-icon{border-color:var(--cyan);background:rgba(0,245,200,.07)}
+.cl-label{font-family:var(--code);font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px;display:block}
+.cl-value{font-family:var(--mono);font-size:13px;color:var(--text);transition:color .2s}
+.contact-link:hover .cl-value{color:var(--cyan)}
+.geo-tag{font-family:var(--code);font-size:11px;color:var(--muted);display:flex;align-items:center;gap:8px}
+.geo-tag::before{content:'📍'}
+
+/* ── FOOTER ── */
+footer{border-top:1px solid var(--border);padding:28px 48px;display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1}
+.footer-copy{font-family:var(--code);font-size:10px;color:var(--dim);letter-spacing:1px}
+.footer-tag{font-family:var(--code);font-size:10px;color:var(--dim)}
+.footer-tag span{color:var(--cyan)}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--black)}
+::-webkit-scrollbar-thumb{background:var(--dim);border-radius:2px}
+
+/* ── CODE BLOCK decorations ── */
+.code-decor{font-family:var(--code);font-size:10px;color:var(--dim);line-height:1.8;background:var(--panel);border:1px solid var(--border);border-radius:3px;padding:14px 18px;margin-bottom:32px}
+.code-decor .c{color:var(--muted)}
+.code-decor .k{color:var(--cyan)}
+.code-decor .s{color:var(--amber)}
+.code-decor .v{color:var(--pink)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  nav{padding:16px 24px}.nav-links{display:none}
+  section{padding:70px 24px}
+  #hero{padding:90px 24px 50px}
+  .hero-grid{grid-template-columns:1fr;gap:40px}
+  .about-grid{grid-template-columns:1fr}
+  .hero-right{order:-1;align-items:flex-start}
+  .photo-frame{width:200px;height:240px}
+  footer{flex-direction:column;gap:8px;padding:20px 24px;text-align:center}
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#hero">YT<span>.dev</span></a>
+  <div class="nav-links">
+    <a href="#skills">Skills</a>
+    <a href="#experience">Experience</a>
+    <a href="#achievements">Impact</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+  </div>
+  <div class="nav-status">
+    <div class="status-dot"></div>
+    Open to Work
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grid max-w">
+    <div class="hero-left reveal">
+      <div class="hero-tag">Solution Architect &amp; Data Engineer</div>
+      <h1>
+        <span class="line-muted">Strategic</span>
+        <span class="line-cyan">Data &amp;</span>
+        <span class="line-white">Architecture.</span>
+      </h1>
+      <p class="hero-bio">
+        <strong>20+ years</strong> designing large-scale Big Data ecosystems across 
+        <strong>telecom, banking &amp; retail</strong> for global organizations. Expert in 
+        Cloudera/Hadoop, ETL pipelines, MLOps automation, and bridging technical 
+        complexity with business goals across <strong>US, Europe &amp; Asia</strong>.
+      </p>
+      <div class="hero-cta">
+        <a class="btn btn-cyan" href="#contact">Let's Connect ↗</a>
+        <a class="btn btn-ghost" href="#experience">View Experience</a>
+        <a class="btn btn-ghost" href="https://linkedin.com/in/yodesaya-timprom-368b79239" target="_blank">LinkedIn ↗</a>
+        <a class="btn btn-ghost" href="https://github.com/howtotailscompany" target="_blank">GitHub ↗</a>
+      </div>
+    </div>
+    <div class="hero-right reveal" style="animation-delay:.15s">
+      <div class="photo-frame">
+        <img src="/mnt/user-data/uploads/IMG_20220127_225109.jpg" alt="Yodesaya Timprom">
+        <div class="photo-badge">Bangkok · TH</div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card">
+          <span class="stat-num">20+</span>
+          <span class="stat-lbl">Yrs Exp</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-num">50+</span>
+          <span class="stat-lbl">Mentored</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-num">99.9%</span>
+          <span class="stat-lbl">Uptime SLA</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-decor"></div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="max-w">
+    <div class="section-label">Technical Stack</div>
+    <h2 class="section-title">Core <em>Expertise</em></h2>
+    <div class="skills-grid">
+      <div class="skill-group reveal">
+        <div class="skill-group-title"><span class="skill-group-icon">⬡</span> Big Data &amp; Cloud</div>
+        <div class="skill-tags">
+          <span class="skill-tag hot">Cloudera Manager</span><span class="skill-tag hot">Hadoop / HDFS</span>
+          <span class="skill-tag hot">Apache Kafka</span><span class="skill-tag hot">Apache Spark</span>
+          <span class="skill-tag">Hive</span><span class="skill-tag">HBase</span>
+          <span class="skill-tag">Impala</span><span class="skill-tag">Oozie</span>
+          <span class="skill-tag">YARN</span><span class="skill-tag">Zookeeper</span>
+          <span class="skill-tag">Flume</span><span class="skill-tag">Sqoop</span>
+          <span class="skill-tag">AWS ECS</span><span class="skill-tag">Databricks</span>
+          <span class="skill-tag">BigQuery</span>
+        </div>
+      </div>
+      <div class="skill-group reveal" style="animation-delay:.1s">
+        <div class="skill-group-title"><span class="skill-group-icon">⬡</span> ETL &amp; BI Tools</div>
+        <div class="skill-tags">
+          <span class="skill-tag hot">IBM InfoSphere DataStage</span>
+          <span class="skill-tag hot">Informatica PowerCenter</span>
+          <span class="skill-tag">SAS 9.4</span><span class="skill-tag">SAP BW</span>
+          <span class="skill-tag">SAP Business Objects</span>
+          <span class="skill-tag">SSIS / SSRS / SSAS</span>
+          <span class="skill-tag">StreamSets</span><span class="skill-tag">QlikView</span>
+          <span class="skill-tag">Spotfire</span><span class="skill-tag">RapidMiner</span>
+        </div>
+      </div>
+      <div class="skill-group reveal" style="animation-delay:.2s">
+        <div class="skill-group-title"><span class="skill-group-icon">⬡</span> Databases</div>
+        <div class="skill-tags">
+          <span class="skill-tag hot">Oracle PL/SQL</span>
+          <span class="skill-tag hot">MongoDB / NoSQL</span>
+          <span class="skill-tag">PostgreSQL</span><span class="skill-tag">MySQL</span>
+          <span class="skill-tag">MSSQL</span><span class="skill-tag">Elasticsearch</span>
+          <span class="skill-tag">DB2</span><span class="skill-tag">Sybase</span>
+          <span class="skill-tag">IBM Netezza</span>
+        </div>
+      </div>
+      <div class="skill-group reveal" style="animation-delay:.3s">
+        <div class="skill-group-title"><span class="skill-group-icon">⬡</span> DevOps &amp; Infra</div>
+        <div class="skill-tags">
+          <span class="skill-tag hot">Linux / Shell Script</span>
+          <span class="skill-tag hot">Ansible</span>
+          <span class="skill-tag">Docker</span><span class="skill-tag">Kubernetes</span>
+          <span class="skill-tag">Kerberos / SSL</span>
+          <span class="skill-tag">Jenkins</span><span class="skill-tag">CyberArk</span>
+          <span class="skill-tag">VMware</span><span class="skill-tag">VPN / Load Balancing</span>
+        </div>
+      </div>
+      <div class="skill-group reveal" style="animation-delay:.4s">
+        <div class="skill-group-title"><span class="skill-group-icon">⬡</span> Languages</div>
+        <div class="skill-tags">
+          <span class="skill-tag hot">Python</span><span class="skill-tag hot">SQL / PL/SQL</span>
+          <span class="skill-tag">PHP (MVC)</span><span class="skill-tag">Java J2EE</span>
+          <span class="skill-tag">C#</span><span class="skill-tag">Node.js</span>
+          <span class="skill-tag">JavaScript</span><span class="skill-tag">Shell Script</span>
+          <span class="skill-tag">XML / XPath</span>
+        </div>
+      </div>
+      <div class="skill-group reveal" style="animation-delay:.5s">
+        <div class="skill-group-title"><span class="skill-group-icon">⬡</span> Collaboration &amp; PM</div>
+        <div class="skill-tags">
+          <span class="skill-tag hot">JIRA / Confluence</span>
+          <span class="skill-tag hot">Agile / Scrum</span>
+          <span class="skill-tag">GitHub / GitLab</span>
+          <span class="skill-tag">Postman</span>
+          <span class="skill-tag">Microsoft Teams</span>
+          <span class="skill-tag">UML / SDLC</span>
+          <span class="skill-tag">MS Project</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="max-w">
+    <div class="section-label">Work History</div>
+    <h2 class="section-title">Professional <em>Experience</em></h2>
+    <div class="timeline">
+
+      <div class="exp-item reveal">
+        <div class="exp-header">
+          <div>
+            <div class="exp-title">System Analyst</div>
+            <div class="exp-company">TP Consulting</div>
+            <div class="exp-client">Client: True Corporation</div>
+          </div>
+          <div class="exp-period">Apr 2025 – Present</div>
+        </div>
+        <div class="exp-bullets">
+          <div class="exp-bullet">Modernized system requirements for Customer Portal &amp; Order Management, managing backlog via JIRA sprint planning across multiple phases.</div>
+          <div class="exp-bullet">Led analysis of SIM Swap (True &amp; DTAC), Switch Off, Number Swap, and Resume services — designing Sequence Flow Diagrams &amp; phased delivery plans.</div>
+          <div class="exp-bullet">Configured Postman scripts &amp; local API environments for DEV/UAT servers; aligned API templates with MongoDB schemas.</div>
+          <div class="exp-bullet">Prepared penetration testing documentation, tracked logs via Elasticsearch, managed versioned technical documentation through production transition.</div>
+        </div>
+        <div class="exp-tags">
+          <span class="exp-tag">JIRA</span><span class="exp-tag">Postman</span><span class="exp-tag">MongoDB</span>
+          <span class="exp-tag">Elasticsearch</span><span class="exp-tag">REST API</span><span class="exp-tag">UAT/SIT</span>
+        </div>
+      </div>
+
+      <div class="exp-item reveal">
+        <div class="exp-header">
+          <div>
+            <div class="exp-title">Cloudera Hadoop Admin — Team Lead</div>
+            <div class="exp-company">Tech Mahindra</div>
+            <div class="exp-client">Client: DTAC</div>
+          </div>
+          <div class="exp-period">Jun 2021 – Oct 2024</div>
+        </div>
+        <div class="exp-bullets">
+          <div class="exp-bullet">Led Cloudera Hadoop operations team under SLA — L2/L3 support &amp; root-cause analysis for production incidents across distributed Linux clusters.</div>
+          <div class="exp-bullet">Automated alert notifications using Ansible &amp; Python, reducing manual monitoring overhead by <strong style="color:var(--cyan)">70%</strong> and ensuring 99.9% system uptime.</div>
+          <div class="exp-bullet">Configured Cloudera Manager: Impala, YARN, Kafka (SSL/Kerberos), Hive — resolving memory &amp; daemon issues case-by-case.</div>
+          <div class="exp-bullet">Sole Thai representative in Bi-weekly Global SME calls — bilingual coordinator between Thai clients and international stakeholders.</div>
+          <div class="exp-bullet">Mentored CMT Team; delivered knowledge sessions on Hadoop, MongoDB, Oracle PL/SQL &amp; PostgreSQL to 50+ staff.</div>
+        </div>
+        <div class="exp-tags">
+          <span class="exp-tag">Cloudera</span><span class="exp-tag">Hadoop</span><span class="exp-tag">Ansible</span>
+          <span class="exp-tag">Kafka</span><span class="exp-tag">Kerberos</span><span class="exp-tag">Grafana</span>
+          <span class="exp-tag">Python</span><span class="exp-tag">Linux</span>
+        </div>
+      </div>
+
+      <div class="exp-item reveal">
+        <div class="exp-header">
+          <div>
+            <div class="exp-title">Sr. Software Engineer I</div>
+            <div class="exp-company">Aware Corporation Limited</div>
+            <div class="exp-client">Client: True Corporation (DMC)</div>
+          </div>
+          <div class="exp-period">Aug 2020 – May 2021</div>
+        </div>
+        <div class="exp-bullets">
+          <div class="exp-bullet">Senior PL/SQL Developer on 4G/5G telecom migration — extending DMC server capacity for decentralized number registration.</div>
+          <div class="exp-bullet">Developed PHP MVC web applications with REST API / JSON integration on Oracle Database 11g+.</div>
+        </div>
+        <div class="exp-tags">
+          <span class="exp-tag">Oracle PL/SQL</span><span class="exp-tag">PHP MVC</span><span class="exp-tag">REST API</span><span class="exp-tag">4G/5G</span>
+        </div>
+      </div>
+
+      <div class="exp-item reveal">
+        <div class="exp-header">
+          <div>
+            <div class="exp-title">ETL &amp; BI Technical Consultant</div>
+            <div class="exp-company">I.S. Consulting Co., Ltd</div>
+          </div>
+          <div class="exp-period">Apr 2018 – Jun 2020</div>
+        </div>
+        <div class="exp-bullets">
+          <div class="exp-bullet">Designed &amp; developed ETL pipelines using IBM InfoSphere DataStage, SAS 9.4, Informatica PowerCenter 10.2, &amp; SAP BW.</div>
+          <div class="exp-bullet">Delivered end-to-end BI reports via SAP Business Objects, SSRS dashboards for IFRS banking project.</div>
+          <div class="exp-bullet">Led Big Data migration from IBM InfoSphere/Netezza to SSIS; played multiple roles — SA, Sr. Engineer &amp; BI Specialist.</div>
+        </div>
+        <div class="exp-tags">
+          <span class="exp-tag">DataStage</span><span class="exp-tag">SAS 9.4</span><span class="exp-tag">Informatica</span>
+          <span class="exp-tag">SAP BW</span><span class="exp-tag">SSRS</span><span class="exp-tag">Netezza</span>
+        </div>
+      </div>
+
+      <div class="exp-item reveal">
+        <div class="exp-header">
+          <div>
+            <div class="exp-title">Business Intelligence Team Lead</div>
+            <div class="exp-company">Traceon Development Co., Ltd</div>
+          </div>
+          <div class="exp-period">Apr 2017 – Mar 2018</div>
+        </div>
+        <div class="exp-bullets">
+          <div class="exp-bullet">Built Big Data backend for Retail &amp; E-commerce app using Cloudera Enterprise — Hive, Spark, Kafka, Flume, Solr, Oozie, Sqoop.</div>
+          <div class="exp-bullet">Built data models with Python &amp; Node.js; ETL profiling with StreamSets &amp; RapidMiner; R for predictive modeling.</div>
+        </div>
+        <div class="exp-tags">
+          <span class="exp-tag">Cloudera</span><span class="exp-tag">Spark</span><span class="exp-tag">Kafka</span>
+          <span class="exp-tag">Python</span><span class="exp-tag">R</span><span class="exp-tag">StreamSets</span>
+        </div>
+      </div>
+
+      <div class="exp-item reveal">
+        <div class="exp-header">
+          <div>
+            <div class="exp-title">Analyst 4 / Senior System Analyst, BI &amp; Data</div>
+            <div class="exp-company">Western Digital</div>
+            <div class="exp-client">IBM Big Data Project</div>
+          </div>
+          <div class="exp-period">Feb 2015 – Feb 2017</div>
+        </div>
+        <div class="exp-bullets">
+          <div class="exp-bullet">Designed data models for ETL using IBM InfoSphere DataStage, Netezza &amp; Aginity; implemented in IBM InfoSphere Information Server.</div>
+          <div class="exp-bullet">Created Spotfire reports with Python &amp; JavaScript for international management teams (Thai/Foreigner).</div>
+        </div>
+        <div class="exp-tags">
+          <span class="exp-tag">DataStage</span><span class="exp-tag">Netezza</span><span class="exp-tag">Spotfire</span>
+          <span class="exp-tag">Python</span><span class="exp-tag">IBM InfoSphere</span>
+        </div>
+      </div>
+
+      <div class="exp-item reveal">
+        <div class="exp-header">
+          <div>
+            <div class="exp-title">Earlier Career (2005–2014)</div>
+            <div class="exp-company">Essilor · STATS ChipPAC · ISONET · GITS/DGA · Rajavithi Hospital</div>
+          </div>
+          <div class="exp-period">2004 – 2014</div>
+        </div>
+        <div class="exp-bullets">
+          <div class="exp-bullet">Lens inspection app development (Essilor); on-site training in Paris, France with tri-continental teams (Europe/US/Asia).</div>
+          <div class="exp-bullet">SPC &amp; inventory systems; ISO-TS 16949 QA auditing (STATS ChipPAC).</div>
+          <div class="exp-bullet">Microsoft SharePoint &amp; ASP.NET instructor; Amway RMDM Project BI with SSIS/SSAS/SSRS (ISONET).</div>
+          <div class="exp-bullet">Paperless Meeting Solution for Thai government; full SDLC (GITS/DGA).</div>
+          <div class="exp-bullet">OPDC patient scan &amp; admission systems (Rajavithi Hospital).</div>
+        </div>
+        <div class="exp-tags">
+          <span class="exp-tag">SharePoint</span><span class="exp-tag">SSRS</span><span class="exp-tag">J2EE</span>
+          <span class="exp-tag">PostgreSQL</span><span class="exp-tag">VS .NET</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ACHIEVEMENTS -->
+<section id="achievements">
+  <div class="max-w">
+    <div class="section-label">Key Wins</div>
+    <h2 class="section-title">Measurable <em>Impact</em></h2>
+    <div class="achieve-grid">
+      <div class="achieve-card reveal">
+        <span class="achieve-icon">🏆</span>
+        <div class="achieve-title">Bravo Award — Tech Mahindra</div>
+        <div class="achieve-desc">Recognized by IBU Head for outstanding contributions to Cloudera Hadoop operations and client service excellence (Dec 2021).</div>
+      </div>
+      <div class="achieve-card reveal" style="animation-delay:.1s">
+        <span class="achieve-icon">⚡</span>
+        <div class="achieve-title">70% Monitoring Automation</div>
+        <div class="achieve-desc">Automated critical monitoring workflows using Ansible &amp; Python — reducing manual overhead by 70% and ensuring 99.9% uptime for DTAC Hadoop clusters.</div>
+        <div class="achieve-metric">−70% manual work</div>
+      </div>
+      <div class="achieve-card reveal" style="animation-delay:.2s">
+        <span class="achieve-icon">🌍</span>
+        <div class="achieve-title">Global SME Representative</div>
+        <div class="achieve-desc">Sole Thai representative in Tech Mahindra bi-weekly global SME calls — bilingual technical lead coordinating Thai and international stakeholders.</div>
+        <div class="achieve-metric">TH · IN · US · EU</div>
+      </div>
+      <div class="achieve-card reveal" style="animation-delay:.1s">
+        <span class="achieve-icon">🔐</span>
+        <div class="achieve-title">100% Security Compliance</div>
+        <div class="achieve-desc">Designed Kafka SSL authentication &amp; penetration testing protocols for DTAC/True Corporation's Customer Portal — achieving 100% enterprise security compliance.</div>
+        <div class="achieve-metric">100% compliance</div>
+      </div>
+      <div class="achieve-card reveal" style="animation-delay:.2s">
+        <span class="achieve-icon">🚀</span>
+        <div class="achieve-title">90% Faster Data Processing</div>
+        <div class="achieve-desc">Led migration of IBM Netezza legacy platforms to SSIS/Big Data environments — improving processing speed by 90% and cutting long-term maintenance costs.</div>
+        <div class="achieve-metric">+90% faster</div>
+      </div>
+      <div class="achieve-card reveal" style="animation-delay:.3s">
+        <span class="achieve-icon">📚</span>
+        <div class="achieve-title">50+ Engineers Mentored</div>
+        <div class="achieve-desc">Built internal Center of Excellence — upskilling 50+ junior engineers in Oracle PL/SQL, PostgreSQL, MongoDB, Hadoop &amp; Linux, reducing external consulting dependency.</div>
+        <div class="achieve-metric">50+ upskilled</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STACK MARQUEE -->
+<section id="stack" style="padding-top:70px;padding-bottom:70px">
+  <div class="max-w" style="margin-bottom:28px">
+    <div class="section-label">Full Stack</div>
+  </div>
+  <div class="stack-marquee-wrap">
+    <div class="stack-row">
+      <div class="stack-chip"><div class="dot"></div>Cloudera Manager</div>
+      <div class="stack-chip"><div class="dot"></div>Apache Kafka</div>
+      <div class="stack-chip"><div class="dot pink"></div>IBM InfoSphere</div>
+      <div class="stack-chip"><div class="dot blue"></div>Informatica PowerCenter</div>
+      <div class="stack-chip"><div class="dot amber"></div>Oracle PL/SQL</div>
+      <div class="stack-chip"><div class="dot"></div>Apache Spark</div>
+      <div class="stack-chip"><div class="dot pink"></div>MongoDB</div>
+      <div class="stack-chip"><div class="dot blue"></div>Ansible</div>
+      <div class="stack-chip"><div class="dot"></div>Cloudera Manager</div>
+      <div class="stack-chip"><div class="dot"></div>Apache Kafka</div>
+      <div class="stack-chip"><div class="dot pink"></div>IBM InfoSphere</div>
+      <div class="stack-chip"><div class="dot blue"></div>Informatica PowerCenter</div>
+      <div class="stack-chip"><div class="dot amber"></div>Oracle PL/SQL</div>
+      <div class="stack-chip"><div class="dot"></div>Apache Spark</div>
+      <div class="stack-chip"><div class="dot pink"></div>MongoDB</div>
+      <div class="stack-chip"><div class="dot blue"></div>Ansible</div>
+    </div>
+    <div class="stack-row rev">
+      <div class="stack-chip"><div class="dot amber"></div>Python</div>
+      <div class="stack-chip"><div class="dot"></div>HDFS / YARN</div>
+      <div class="stack-chip"><div class="dot blue"></div>Docker / Kubernetes</div>
+      <div class="stack-chip"><div class="dot pink"></div>SAS 9.4</div>
+      <div class="stack-chip"><div class="dot"></div>Elasticsearch</div>
+      <div class="stack-chip"><div class="dot amber"></div>Databricks</div>
+      <div class="stack-chip"><div class="dot blue"></div>AWS ECS</div>
+      <div class="stack-chip"><div class="dot"></div>Kerberos / SSL</div>
+      <div class="stack-chip"><div class="dot amber"></div>Python</div>
+      <div class="stack-chip"><div class="dot"></div>HDFS / YARN</div>
+      <div class="stack-chip"><div class="dot blue"></div>Docker / Kubernetes</div>
+      <div class="stack-chip"><div class="dot pink"></div>SAS 9.4</div>
+      <div class="stack-chip"><div class="dot"></div>Elasticsearch</div>
+      <div class="stack-chip"><div class="dot amber"></div>Databricks</div>
+      <div class="stack-chip"><div class="dot blue"></div>AWS ECS</div>
+      <div class="stack-chip"><div class="dot"></div>Kerberos / SSL</div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT / EDUCATION -->
+<section id="about">
+  <div class="max-w">
+    <div class="section-label">Background</div>
+    <h2 class="section-title">About <em>Me</em></h2>
+    <div class="about-grid">
+      <div class="about-photo-wrap reveal">
+        <img class="about-photo" src="/mnt/user-data/uploads/IMG_20220307_175112.jpg" alt="Yodesaya Timprom">
+      </div>
+      <div class="about-content reveal" style="animation-delay:.15s">
+        <div class="code-decor">
+          <div><span class="k">const</span> yodesaya = {</div>
+          <div>&nbsp;&nbsp;<span class="c">role:</span> <span class="s">"Solution Architect & Data Engineer"</span>,</div>
+          <div>&nbsp;&nbsp;<span class="c">experience:</span> <span class="v">20</span><span class="c"> // years</span>,</div>
+          <div>&nbsp;&nbsp;<span class="c">location:</span> <span class="s">"Bangkok, Thailand"</span>,</div>
+          <div>&nbsp;&nbsp;<span class="c">remote:</span> <span class="s">"Open to International Relocation"</span>,</div>
+          <div>&nbsp;&nbsp;<span class="c">languages:</span> [<span class="s">"Thai"</span>, <span class="s">"English"</span>],</div>
+          <div>&nbsp;&nbsp;<span class="c">international:</span> <span class="s">"US, Europe, Asia"</span></div>
+          <div>};</div>
+        </div>
+        <div class="section-label" style="margin-bottom:12px">Education</div>
+        <div class="edu-item">
+          <div class="edu-degree">M.Sc. in Software Engineering</div>
+          <div class="edu-school">King Mongkut's University of Technology Thonburi (KMUTT)</div>
+          <div class="edu-meta">Apr 2012 · GPA 3.0/4.0 · TOEFL 507 · TOEIC 635</div>
+        </div>
+        <div class="edu-item">
+          <div class="edu-degree">B.S. in Computer Science</div>
+          <div class="edu-school">Dhonburi Rajabhat University (DRU), Bangkok</div>
+          <div class="edu-meta">Aug 2005 · GPA 3.12/4.0</div>
+        </div>
+        <div class="section-label" style="margin-top:24px;margin-bottom:12px">Certifications</div>
+        <div class="cert-grid">
+          <div class="cert-card"><div class="cert-name">Foundations of Project Management</div><div class="cert-issuer">Google · 2023</div></div>
+          <div class="cert-card"><div class="cert-name">Foundations of Cybersecurity</div><div class="cert-issuer">Google · 2023</div></div>
+          <div class="cert-card"><div class="cert-name">Automate Tasks with Jira</div><div class="cert-issuer">Coursera · 2023</div></div>
+          <div class="cert-card"><div class="cert-name">AWS Builders Online Series</div><div class="cert-issuer">Amazon Web Services · 2023</div></div>
+          <div class="cert-card"><div class="cert-name">Generative AI — Online Search</div><div class="cert-issuer">LinkedIn Learning · 2023</div></div>
+          <div class="cert-card"><div class="cert-name">Microsoft Bing Chat Productivity</div><div class="cert-issuer">LinkedIn Learning · 2023</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="max-w">
+    <div class="contact-inner reveal">
+      <div class="section-label">Get In Touch</div>
+      <h2 class="contact-title">Let's Build<br>Something <em>Big.</em></h2>
+      <div class="contact-links">
+        <a class="contact-link" href="mailto:chiffonmon@gmail.com">
+          <div class="cl-icon">✉</div>
+          <div><span class="cl-label">Email</span><span class="cl-value">chiffonmon@gmail.com</span></div>
+        </a>
+        <a class="contact-link" href="tel:+66958566446">
+          <div class="cl-icon">☎</div>
+          <div><span class="cl-label">Phone</span><span class="cl-value">(+66) 95-856-6446</span></div>
+        </a>
+        <a class="contact-link" href="https://linkedin.com/in/yodesaya-timprom-368b79239" target="_blank">
+          <div class="cl-icon">in</div>
+          <div><span class="cl-label">LinkedIn</span><span class="cl-value">yodesaya-timprom-368b79239</span></div>
+        </a>
+        <a class="contact-link" href="https://github.com/howtotailscompany" target="_blank">
+          <div class="cl-icon">⌥</div>
+          <div><span class="cl-label">GitHub</span><span class="cl-value">github.com/howtotailscompany</span></div>
+        </a>
+      </div>
+      <div class="geo-tag">Bangkok, Thailand 10140 · Open to International Relocation</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-copy">© 2026 Yodesaya Timprom. All rights reserved.</div>
+  <div class="footer-tag">Built with <span>✦</span> precision</div>
+</footer>
+
+<script>
+// Custom cursor
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cursor.style.left = mx+'px'; cursor.style.top = my+'px';
+});
+function animRing(){
+  rx += (mx-rx)*.15; ry += (my-ry)*.15;
+  ring.style.left = rx+'px'; ring.style.top = ry+'px';
+  requestAnimationFrame(animRing);
+}
+animRing();
+document.querySelectorAll('a,button,.achieve-card,.skill-tag,.exp-item').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{ring.style.transform='translate(-50%,-50%) scale(2.2)';ring.style.borderColor='var(--pink)';});
+  el.addEventListener('mouseleave',()=>{ring.style.transform='translate(-50%,-50%) scale(1)';ring.style.borderColor='var(--cyan)';});
+});
+
+// Scroll reveal
+const obs = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});
+},{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+// Nav scroll effect
+window.addEventListener('scroll',()=>{
+  const nav=document.querySelector('nav');
+  nav.style.borderBottomColor = window.scrollY>50 ? 'rgba(0,245,200,.15)' : 'rgba(255,255,255,.07)';
+});
+</script>
+</body>
+</html>
